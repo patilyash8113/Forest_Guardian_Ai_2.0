@@ -1,0 +1,448 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "httpMethod": [
+          "POST"
+        ],
+        "path": "=forest-report",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        16
+      ],
+      "id": "cd2c9c60-abae-4500-9356-4544cb253cd5",
+      "name": "Webhook",
+      "webhookId": "f26b741e-65ce-4a16-98ec-8bd681890d9a",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"location\": \"{{ $json.body.location }}\",\n  \"description\": \"{{ $json.body.description }}\",\n  \"timestamp\": \"{{new Date().toISOString()}}\",\n  \"report_source\": \"Citizen\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        16
+      ],
+      "id": "a37f71d1-9092-4e80-a20f-d2265173a0d5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# ROLE\n\nYou are Forest Guardian AI, an Environmental Incident Analysis and Decision Support Agent.\n\nYour responsibility is to analyze citizen-reported forest incidents and provide an objective environmental risk assessment for forest departments, wildlife authorities, NGOs, and disaster management agencies.\n\nYour analysis must always be based ONLY on the information provided by the citizen.\n\nDo not invent facts.\n\nRemain professional, concise, and evidence-based.\n\n----------------------------------------------------\n\n# OBJECTIVE\n\nAnalyze the incident report and determine:\n\n1. Incident Type\n2. Risk Level\n3. Priority\n4. Risk Score\n5. Confidence Score\n6. Environmental Impact\n7. Possible Causes\n8. Recommended Action\n9. Response Time\n10. Professional Summary\n\n----------------------------------------------------\n\n# INPUT\n\nCitizen Name:\n{{ $json.name }}\n\nEmail:\n{{ $json.email }}\n\nPhone:\n{{ $json.phone }}\n\nLocation:\n{{ $json.location }}\n\nDescription:\n{{ $json.description }}\n\nTimestamp:\n{{ $json.timestamp }}\n\nReport Source:\n{{ $json.report_source }}\n\n----------------------------------------------------\n\n# POSSIBLE INCIDENT TYPES\n\nChoose the single best match.\n\n- Illegal Logging\n- Forest Fire\n- Wildlife Poaching\n- Illegal Mining\n- Water Pollution\n- Plastic Waste Dumping\n- Chemical Pollution\n- Habitat Destruction\n- Encroachment\n- Road Construction\n- Human-Wildlife Conflict\n- Flood Damage\n- Landslide\n- Deforestation\n- Unknown\n\nIf there is insufficient evidence, return \"Unknown\".\n\n----------------------------------------------------\n\n# RISK LEVEL\n\nChoose ONLY one.\n\nLow\nMedium\nHigh\nCritical\n\n----------------------------------------------------\n\n# PRIORITY\n\nChoose ONLY one.\n\nNormal\nUrgent\nEmergency\n\n----------------------------------------------------\n\n# RISK SCORE\n\nReturn an integer between 0 and 100.\n\nGuide:\n\n0–20   Very Low\n21–40  Low\n41–60  Moderate\n61–80  High\n81–100 Critical\n\n----------------------------------------------------\n\n# CONFIDENCE\n\nReturn a decimal value between\n\n0.00\n\nand\n\n1.00\n\nReduce confidence when:\n\n- description is too short\n- location is unclear\n- evidence is insufficient\n- incident cannot be classified confidently\n\n----------------------------------------------------\n\n# ENVIRONMENTAL IMPACT\n\nProvide a short explanation (1–2 sentences).\n\nPossible impacts include:\n\n- habitat destruction\n- biodiversity loss\n- wildlife disturbance\n- soil erosion\n- water pollution\n- air pollution\n- ecosystem imbalance\n- carbon emissions\n\nOnly include impacts supported by the report.\n\n----------------------------------------------------\n\n# POSSIBLE CAUSES\n\nInfer the most likely cause.\n\nExamples:\n\nIllegal commercial logging\n\nFuelwood collection\n\nNatural wildfire\n\nIntentional burning\n\nMining activity\n\nIndustrial discharge\n\nAgricultural expansion\n\nUrban encroachment\n\nTourism waste\n\nUnknown\n\n----------------------------------------------------\n\n# RECOMMENDATION\n\nProvide practical actions.\n\nExamples:\n\nDispatch forest officers.\n\nNotify wildlife authorities.\n\nSend emergency fire response.\n\nCollect photographs.\n\nDeploy drones.\n\nIncrease patrol frequency.\n\nSecure the affected area.\n\nMonitor the location.\n\nBegin restoration work.\n\nOnly recommend actions supported by the report.\n\n----------------------------------------------------\n\n# RESPONSE TIME\n\nChoose ONLY one.\n\nImmediate\n\nWithin 1 Hour\n\nWithin 24 Hours\n\nRoutine Monitoring\n\n----------------------------------------------------\n\n# SUMMARY\n\nWrite a professional summary in 2–3 sentences.\n\nInclude:\n\n• What happened\n\n• Environmental significance\n\n• Recommended next step\n\nIf information is limited, clearly mention that additional verification is required.\n\n----------------------------------------------------\n\n# IMPORTANT RULES\n\nNever invent facts.\n\nNever fabricate locations.\n\nNever fabricate wildlife species.\n\nNever exaggerate the severity.\n\nNever assume crimes without evidence.\n\nBase every conclusion on the provided report.\n\nIf the description is vague:\n\n- classify as Unknown when appropriate\n- lower confidence\n- recommend additional verification\n\nReturn ONLY valid JSON.\n\nNo markdown.\n\nNo explanations.\n\nNo extra text.\n\n----------------------------------------------------\n\n# OUTPUT FORMAT\n\n{\n  \"incident_type\": \"\",\n  \"risk\": \"\",\n  \"priority\": \"\",\n  \"risk_score\": 0,\n  \"confidence\": 0.00,\n  \"environmental_impact\": \"\",\n  \"possible_causes\": \"\",\n  \"recommendation\": \"\",\n  \"response_time\": \"\",\n  \"location\": \"{{ $json.location }}\",\n  \"summary\": \"\"\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -112,
+        0
+      ],
+      "id": "443dfbc8-7a14-429b-9ce8-e29851dc8f6f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -112,
+        192
+      ],
+      "id": "8996ee90-ffc3-4d7a-a97c-f118a6dc9f4a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Cz8fFoTq1Zp7M5Xs",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "759ff727-1b4b-4a9f-a970-1fcdf06751f6",
+              "leftValue": "={{ $json.output.risk_score }}",
+              "rightValue": 81,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        16
+      ],
+      "id": "2b68e798-c3cb-40cc-bd64-e5701a6bb524",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "rudraillhe@gmail.com",
+        "subject": "🚨 HIGH RISK FOREST ALERT",
+        "message": "=A new forest incident has been reported.\n\nReporter Details\n-----------------------\nName: {{ $('Webhook').item.json.body.name }}\nEmail: {{ $('Webhook').item.json.body.email }}\nPhone: {{ $('Webhook').item.json.body.phone }}\nLocation: {{ $('Webhook').item.json.body.location }}\nIncident Description\n-----------------------\n{{ $('Webhook').item.json.body.description }}\n\nAI Analysis\n-----------------------\nIncident Type:{{ $('AI Agent').item.json.output.incident_type }}\nRisk Level: {{ $('AI Agent').item.json.output.risk }}\nPriority: {{ $('AI Agent').item.json.output.priority }}\nRisk Score: {{ $('AI Agent').item.json.output.risk_score }}\nConfidence: {{ $('AI Agent').item.json.output.confidence }}\n\nEnvironmental Impact:\n{{ $('AI Agent').item.json.output.environmental_impact }}\n\nPossible Causes:\n{{ $('AI Agent').item.json.output.possible_causes }}\n\nRecommendation:\n{{ $('AI Agent').item.json.output.recommendation }}\n\nResponse Time:\n{{ $('AI Agent').item.json.output.response_time }}\n\nSummary:\n{{ $('AI Agent').item.json.output.summary }}\nTimestamp:\n{{ $('Webhook').item.json.body.timestamp }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -80
+      ],
+      "id": "573efc2e-7476-40cf-8d26-47430014a719",
+      "name": "Send a message",
+      "webhookId": "e743df85-ef10-42bc-a8f1-bc975cc52e1c",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "VJEiRmOHTjsTbNl3",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"incident_type\": \"string\",\n  \"risk\": \"string\",\n  \"priority\": \"string\",\n  \"risk_score\": 0,\n  \"confidence\": 0,\n  \"environmental_impact\": \"string\",\n  \"possible_causes\": \"string\",\n  \"recommendation\": \"string\",\n  \"response_time\": \"string\",\n  \"location\": \"string\",\n  \"summary\": \"string\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        32,
+        192
+      ],
+      "id": "2fecaca8-bf43-4b55-988c-a1167d2604b3",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1XiSmgXueBlhYn_pYimioYyRb27zSpW0DwQwhmqeD_0A",
+          "mode": "list",
+          "cachedResultName": "Copy of Forest guardian ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XiSmgXueBlhYn_pYimioYyRb27zSpW0DwQwhmqeD_0A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XiSmgXueBlhYn_pYimioYyRb27zSpW0DwQwhmqeD_0A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $('Webhook').item.json.body.timestamp }}",
+            "phone number": "={{ $('Webhook').item.json.body.phone }}",
+            "Name": "={{ $('Webhook').item.json.body.name }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Report_Source": "={{ $('Webhook').item.json.body.report_source }}",
+            "Location": "={{ $('Webhook').item.json.body.location }}",
+            "Incident": "={{ $('AI Agent').item.json.output.incident_type }}",
+            "Risk": "={{ $('AI Agent').item.json.output.risk }}",
+            "Risk_Score": "={{ $('AI Agent').item.json.output.risk_score }}",
+            "Environmental_Impact": "={{ $('AI Agent').item.json.output.environmental_impact }}",
+            "Possible_Causes": "={{ $('AI Agent').item.json.output.possible_causes }}",
+            "Recommendation": "={{ $('AI Agent').item.json.output.recommendation }}",
+            "Summary": "={{ $('AI Agent').item.json.output.summary }}",
+            "Confidence": "={{ $('AI Agent').item.json.output.confidence }}",
+            "Priority": "={{ $('AI Agent').item.json.output.priority }}",
+            "Response_Time": "={{ $('AI Agent').item.json.output.response_time }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone number",
+              "displayName": "phone number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confidence",
+              "displayName": "Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Response_Time",
+              "displayName": "Response_Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Report_Source",
+              "displayName": "Report_Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Possible_Causes",
+              "displayName": "Possible_Causes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environmental_Impact",
+              "displayName": "Environmental_Impact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Incident",
+              "displayName": "Incident",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Risk",
+              "displayName": "Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Risk_Score",
+              "displayName": "Risk_Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recommendation",
+              "displayName": "Recommendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        112
+      ],
+      "id": "7c1b5e90-deee-4add-83b8-934b2ba2a253",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IHlyvdz89Qxkew1N",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e6eb11b4-8e85-4d2d-a874-a7e4183cb3d6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7dbd4365cb14e9e3aaef076de47ae21f1de25340dd0c3b9aae8361ef9a2b5c33"
+  },
+  "nodeGroups": [],
+  "id": "kBeBDaYJ2D4nW5Af",
+  "tags": []
+}
